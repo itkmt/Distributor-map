@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 7.6.4.1 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="00:00:00"/>
+	<style type="text/css">
+		@page { size: 8.27in 11.69in; margin: 0.79in }
+		p { line-height: 115%; margin-bottom: 0.1in; background: transparent }
+		pre { background: transparent }
+		pre.western { font-family: "Liberation Mono", monospace; font-size: 10pt }
+		pre.cjk { font-family: "NSimSun", monospace; font-size: 10pt }
+		pre.ctl { font-family: "Liberation Mono", monospace; font-size: 10pt }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre class="western">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Google Map Pincode Markers&lt;/title&gt;
+    &lt;style&gt;
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    &lt;/style&gt;
+    &lt;script&gt;
+      let map;
+
+      // Replace with your published CSV URL
+      const sheetCSVUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQMJlYV4vp1-zqS_DdikTcmQ94A4pcqjBgjxYTIC2xFJjiILtfnvA0ujzGZIx1c3GX70rHsZPiBKM60/pub?gid=0&single=true&output=csv';
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById(&quot;map&quot;), {
+          zoom: 5,
+          center: { lat: 23.2599, lng: 77.4126 }, // India center
+        });
+
+        fetch(sheetCSVUrl)
+          .then(response =&gt; response.text())
+          .then(csvText =&gt; {
+            const rows = csvText.split(&quot;\n&quot;).slice(1); // skip header
+            const geocoder = new google.maps.Geocoder();
+            const bounds = new google.maps.LatLngBounds();
+
+            rows.forEach((row, i) =&gt; {
+              const columns = row.split(&quot;,&quot;);
+              const pincode = columns[9]?.trim(); // Column J = index 9
+
+              if (pincode &amp;&amp; /^\d{6}$/.test(pincode)) {
+                geocoder.geocode({ address: pincode + &quot;, India&quot; }, (results, status) =&gt; {
+                  if (status === &quot;OK&quot;) {
+                    const location = results[0].geometry.location;
+                    new google.maps.Marker({
+                      map: map,
+                      position: location,
+                      icon: {
+                        url: &quot;http://maps.google.com/mapfiles/ms/icons/red-dot.png&quot;,
+                      },
+                    });
+                    bounds.extend(location);
+                    map.fitBounds(bounds);
+                  } else {
+                    console.warn(&quot;Geocode failed for: &quot; + pincode + &quot;, status: &quot; + status);
+                  }
+                });
+              }
+            });
+          });
+      }
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;map&quot;&gt;&lt;/div&gt;
+    &lt;script
+      async
+      defer
+      src=&quot;https://maps.googleapis.com/maps/api/js?key=AIzaSyAt7njhzE43ZUPIjkHCSyX_iJ2UamrhK9I&amp;callback=initMap&quot;
+    &gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</body>
+</html>
