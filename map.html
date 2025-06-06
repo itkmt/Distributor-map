@@ -46,7 +46,7 @@
 
             rows.forEach((row, i) =&gt; {
               const columns = row.split(&quot;,&quot;);
-              const pincode = columns[9]?.trim(); // Column J = index 9
+              const pincode = columns[3]?.trim(); // Column D = index 3
 
               if (pincode &amp;&amp; /^\d{6}$/.test(pincode)) {
                 geocoder.geocode({ address: pincode + &quot;, India&quot; }, (results, status) =&gt; {
