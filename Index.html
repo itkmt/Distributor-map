@@ -1,85 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title></title>
-	<meta name="generator" content="LibreOffice 7.6.4.1 (Linux)"/>
-	<meta name="created" content="00:00:00"/>
-	<meta name="changed" content="00:00:00"/>
-	<style type="text/css">
-		@page { size: 8.27in 11.69in; margin: 0.79in }
-		p { line-height: 115%; margin-bottom: 0.1in; background: transparent }
-		pre { background: transparent }
-		pre.western { font-family: "Liberation Mono", monospace; font-size: 10pt }
-		pre.cjk { font-family: "NSimSun", monospace; font-size: 10pt }
-		pre.ctl { font-family: "Liberation Mono", monospace; font-size: 10pt }
-	</style>
-</head>
-<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre class="western">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt;Google Map Pincode Markers&lt;/title&gt;
-    &lt;style&gt;
+  <head>
+    <title>Google Map Pincode Markers</title>
+    <style>
       #map {
         height: 100vh;
         width: 100%;
       }
-    &lt;/style&gt;
-    &lt;script&gt;
+    </style>
+    <script>
       let map;
 
-      // Replace with your published CSV URL
       const sheetCSVUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQMJlYV4vp1-zqS_DdikTcmQ94A4pcqjBgjxYTIC2xFJjiILtfnvA0ujzGZIx1c3GX70rHsZPiBKM60/pub?gid=0&single=true&output=csv';
 
       function initMap() {
-        map = new google.maps.Map(document.getElementById(&quot;map&quot;), {
+        map = new google.maps.Map(document.getElementById("map"), {
           zoom: 5,
-          center: { lat: 23.2599, lng: 77.4126 }, // India center
+          center: { lat: 23.2599, lng: 77.4126 },
         });
 
         fetch(sheetCSVUrl)
-          .then(response =&gt; response.text())
-          .then(csvText =&gt; {
-            const rows = csvText.split(&quot;\n&quot;).slice(1); // skip header
+          .then(response => response.text())
+          .then(csvText => {
+            const rows = csvText.split("\n").slice(1);
             const geocoder = new google.maps.Geocoder();
             const bounds = new google.maps.LatLngBounds();
 
-            rows.forEach((row, i) =&gt; {
-              const columns = row.split(&quot;,&quot;);
+            rows.forEach((row, i) => {
+              const columns = row.split(",");
               const pincode = columns[3]?.trim(); // Column D = index 3
 
-              if (pincode &amp;&amp; /^\d{6}$/.test(pincode)) {
-                geocoder.geocode({ address: pincode + &quot;, India&quot; }, (results, status) =&gt; {
-                  if (status === &quot;OK&quot;) {
+              if (pincode && /^\d{6}$/.test(pincode)) {
+                geocoder.geocode({ address: pincode + ", India" }, (results, status) => {
+                  if (status === "OK") {
                     const location = results[0].geometry.location;
                     new google.maps.Marker({
                       map: map,
                       position: location,
                       icon: {
-                        url: &quot;http://maps.google.com/mapfiles/ms/icons/red-dot.png&quot;,
+                        url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
                       },
                     });
                     bounds.extend(location);
                     map.fitBounds(bounds);
                   } else {
-                    console.warn(&quot;Geocode failed for: &quot; + pincode + &quot;, status: &quot; + status);
+                    console.warn("Geocode failed for: " + pincode + ", status: " + status);
                   }
                 });
               }
             });
           });
       }
-    &lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;div id=&quot;map&quot;&gt;&lt;/div&gt;
-    &lt;script
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script
       async
       defer
-      src=&quot;https://maps.googleapis.com/maps/api/js?key=AIzaSyAt7njhzE43ZUPIjkHCSyX_iJ2UamrhK9I&amp;callback=initMap&quot;
-    &gt;&lt;/script&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</pre>
-</body>
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAt7njhzE43ZUPIjkHCSyX_iJ2UamrhK9I&callback=initMap"
+    ></script>
+  </body>
 </html>
